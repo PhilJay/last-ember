@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Last Ember</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 10 10%27%3E%3Ccircle cx=%275%27 cy=%276%27 r=%273%27 fill=%27%23ff7a3a%27/%3E%3C/svg%3E">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #0a0a12; font-family: Georgia, 'Times New Roman', serif; color: #fff4e0; user-select: none; }
+  canvas { display: block; }
+  #hud { position: fixed; inset: 0; pointer-events: none; display: none; text-shadow: 0 2px 8px #000a; }
+  #hud .tl { position: absolute; left: 24px; top: 18px; font-size: 30px; letter-spacing: 4px; color: #ff6b4a; }
+  #hud .tr { position: absolute; right: 24px; top: 18px; text-align: right; font-size: 22px; line-height: 1.5; }
+  #hud .tc { position: absolute; left: 0; right: 0; top: 16px; text-align: center; font-size: 16px; letter-spacing: 3px; opacity: .8; text-transform: uppercase; }
+  #hud .tc b { display: block; font-size: 24px; letter-spacing: 5px; color: #ffd27a; }
+  #flare { position: absolute; left: 50%; bottom: 28px; width: 220px; margin-left: -110px; height: 10px; border: 1px solid #ffd27a88; border-radius: 6px; overflow: hidden; background: #0006; }
+  #flare i { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, #ff6b4a, #ffd27a); }
+  #flareLabel { position: absolute; left: 0; right: 0; bottom: 44px; text-align: center; font-size: 13px; letter-spacing: 3px; opacity: .7; }
+  #dash { position: absolute; left: 50%; bottom: 14px; width: 220px; margin-left: -110px; height: 4px; border-radius: 3px; overflow: hidden; background: #0006; }
+  #dash i { display: block; height: 100%; width: 100%; background: #7affd0; }
+  #glide { position: absolute; left: 50%; bottom: 8px; width: 220px; margin-left: -110px; height: 3px; border-radius: 3px; overflow: hidden; background: #0006; }
+  #glide i { display: block; height: 100%; width: 100%; background: #ffd27a; }
+  #voice { position: absolute; left: 24px; bottom: 120px; width: min(420px, 60vw); padding: 10px 16px; border-left: 3px solid #ff8a65; background: #1b1230cc; font-size: 17px; line-height: 1.45; opacity: 0; transition: opacity .5s; }
+  #voice b { display: block; font-size: 12px; letter-spacing: 4px; color: #ff8a65; margin-bottom: 4px; }
+  #trialTag { position: absolute; right: 24px; top: 128px; font-size: 14px; letter-spacing: 3px; color: #7affd0; }
+  #touch { position: fixed; inset: 0; display: none; pointer-events: none; }
+  #touch .stick { position: absolute; left: 28px; bottom: 28px; width: 140px; height: 140px; border-radius: 50%; border: 2px solid #ffd27a66; background: #0003; pointer-events: auto; touch-action: none; }
+  #touch .stick i { position: absolute; left: 50%; top: 50%; width: 56px; height: 56px; margin: -28px; border-radius: 50%; background: #ffd27a88; }
+  #touch .tb { position: absolute; width: 70px; height: 70px; border-radius: 50%; border: 2px solid #ffd27a88; background: #0004; color: #ffd27a; font-size: 13px; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; pointer-events: auto; touch-action: none; }
+  #touch .pausebtn { position: absolute; right: 16px; top: 16px; width: 46px; height: 46px; font-size: 18px; }
+  #fx { position: absolute; left: 24px; top: 64px; font-size: 15px; letter-spacing: 2px; line-height: 1.7; }
+  #lore { position: absolute; left: 50%; bottom: 90px; width: min(640px, 90vw); transform: translateX(-50%); padding: 16px 24px; background: #2a1d10ee; border: 1px solid #ffd27a88; font-style: italic; font-size: 18px; line-height: 1.5; text-align: center; opacity: 0; transition: opacity .6s; color: #f6e3c0; }
+  #lore b { display: block; font-style: normal; letter-spacing: 4px; font-size: 13px; color: #ffd27a; margin-bottom: 6px; }
+  #toast { position: absolute; left: 0; right: 0; top: 22%; text-align: center; font-size: 22px; font-style: italic; opacity: 0; transition: opacity .5s; text-shadow: 0 2px 10px #000; }
+  #flash { position: fixed; inset: 0; pointer-events: none; background: radial-gradient(circle, transparent 40%, #ff1a1acc); opacity: 0; transition: opacity .4s; }
+  :root { --gold: #ffd27a; --ember: #ff8a65; --ui: ui-sans-serif, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+  .overlay { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; flex-direction: column; text-align: center; padding: 24px; background: radial-gradient(ellipse at center, #1b123099 0%, #05050cdd 100%); backdrop-filter: blur(5px); overflow-y: auto; }
+  .overlay.show { display: flex; }
+  .panel { width: min(560px, 94vw); padding: 30px 34px; background: #140e24d9; border: 1px solid #ffd27a33; border-radius: 16px; box-shadow: 0 20px 60px #000a, inset 0 1px 0 #ffffff14; backdrop-filter: blur(10px); }
+  .panel.wide { width: min(880px, 94vw); }
+  .eyebrow { font-family: var(--ui); font-size: 12px; letter-spacing: 6px; color: var(--ember); text-transform: uppercase; margin: 0 0 10px; font-weight: 600; }
+  .logo { font-size: clamp(48px, 10vw, 104px); margin: 0 0 6px; letter-spacing: 14px; font-weight: normal; color: #ffb347; text-shadow: 0 0 50px #ff6b4a, 0 0 10px #ffd27a; line-height: 1; }
+  .tagline { font-style: italic; font-size: 19px; color: #f3e6d0cc; margin: 0 0 34px; }
+  .ptitle { font-size: 34px; letter-spacing: 7px; margin: 0 0 4px; font-weight: normal; color: var(--gold); text-transform: uppercase; }
+  .psub { font-family: var(--ui); font-size: 13px; letter-spacing: 3px; color: #f3e6d099; margin: 0 0 24px; text-transform: uppercase; }
+  .menu { display: flex; flex-direction: column; gap: 10px; width: min(340px, 90vw); }
+  .menu.inline { flex-direction: row; flex-wrap: wrap; justify-content: center; width: auto; }
+  button { font-family: var(--ui); background: #ffffff0a; color: var(--gold); border: 1px solid #ffd27a55; border-radius: 10px; padding: 14px 26px; font-size: 14px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; transition: transform .15s, background .15s, box-shadow .15s, color .15s; }
+  button:hover:not([disabled]) { background: #ffd27a22; border-color: var(--gold); transform: translateY(-1px); box-shadow: 0 6px 24px #ffb34755; }
+  button:active:not([disabled]) { transform: translateY(1px); }
+  button:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+  button.primary { background: linear-gradient(180deg, #ffd98a, #ffb347); color: #2a1608; border-color: #ffd98a; box-shadow: 0 4px 22px #ff8a3a66; }
+  button.primary:hover:not([disabled]) { background: linear-gradient(180deg, #ffe4a8, #ffc062); box-shadow: 0 8px 30px #ff8a3a99; color: #2a1608; }
+  button.quiet { border-color: transparent; background: transparent; color: #f3e6d0aa; font-weight: 500; }
+  .foot { font-family: var(--ui); font-size: 12px; letter-spacing: 2px; color: #f3e6d066; margin-top: 30px; }
+  #cardBody p { font-size: 20px; line-height: 1.65; margin: 0 0 14px; color: #f3e6d0; text-align: left; }
+  #cardBody small { display: block; margin-top: 18px; padding: 14px 16px; border: 1px solid #ffd27a22; border-radius: 10px; background: #ffffff08; font-family: var(--ui); font-size: 13px; line-height: 1.9; letter-spacing: .5px; color: #f3e6d0bb; text-align: center; }
+  #cardTitle { margin-bottom: 20px; }
+  #card .panel { width: min(700px, 94vw); }
+  #card .btns { display: flex; gap: 12px; justify-content: center; margin-top: 26px; }
+  .ctl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 36px; text-align: left; }
+  .ctl-grid h4 { grid-column: 1 / -1; margin: 22px 0 6px; font-family: var(--ui); font-size: 12px; letter-spacing: 5px; color: var(--ember); text-transform: uppercase; font-weight: 700; }
+  .ctl-grid h4:first-child { margin-top: 0; }
+  .row { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 9px 0; border-bottom: 1px solid #ffffff12; font-size: 16px; }
+  .row .act small { display: block; font-family: var(--ui); font-size: 12px; color: #f3e6d088; letter-spacing: .3px; margin-top: 2px; }
+  .keys { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
+  kbd { font-family: var(--ui); display: inline-block; min-width: 30px; padding: 4px 9px; text-align: center; font-size: 12px; font-weight: 700; color: #ffe9b8; background: #ffffff12; border: 1px solid #ffd27a66; border-bottom-width: 3px; border-radius: 7px; letter-spacing: .5px; }
+  .goal { text-align: left; font-size: 17px; line-height: 1.6; color: #f3e6d0; margin: 0 0 22px; padding: 14px 18px; border-left: 3px solid var(--ember); background: #ffffff08; border-radius: 0 10px 10px 0; }
+  .lvgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; width: min(940px, 94vw); margin: 4px 0 24px; }
+  .lv { position: relative; display: block; text-align: left; padding: 16px 18px 16px 74px; letter-spacing: 0; text-transform: none; min-height: 92px; }
+  .lv .num { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-family: Georgia, serif; font-size: 38px; font-weight: normal; color: #ffb34788; letter-spacing: 0; }
+  .lv .realm { display: block; font-size: 11px; letter-spacing: 3px; color: var(--ember); text-transform: uppercase; }
+  .lv .name { display: block; font-family: Georgia, serif; font-size: 20px; font-weight: normal; color: #fff4e0; margin: 2px 0 6px; letter-spacing: .5px; }
+  .lv .stars { font-size: 17px; color: var(--gold); letter-spacing: 3px; }
+  .lv .meta { font-size: 12px; color: #f3e6d0aa; letter-spacing: 1px; margin-left: 8px; font-weight: 500; }
+  .lv[disabled] { opacity: .4; cursor: not-allowed; }
+  #loading { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: #05050c; letter-spacing: 6px; z-index: 9; }
+</style>
+<script type="importmap">{ "imports": { "three": "./vendor/three/three.module.js" } }</script>
+</head>
+<body>
+<div id="loading">KINDLING...</div>
+<div id="hud">
+  <div class="tl" id="hearts"></div>
+  <div class="tc"><span id="realm"></span><b id="lname"></b></div>
+  <div class="tr"><div id="shards"></div><div id="embers"></div><div id="time"></div></div>
+  <div id="toast"></div>
+  <div id="fx"></div>
+  <div id="flareLabel">FLARE [F] &nbsp;·&nbsp; DASH [SHIFT] &nbsp;·&nbsp; GRAPPLE [G] &nbsp;·&nbsp; MENU [P]</div>
+  <div id="flare"><i></i></div>
+  <div id="dash"><i></i></div>
+  <div id="glide"><i></i></div>
+  <div id="voice"></div>
+  <div id="trialTag"></div>
+  <div id="lore"></div>
+</div>
+<div id="flash"></div>
+
+<div class="overlay" id="title">
+  <p class="eyebrow">A tiny spark against the dark</p>
+  <h1 class="logo">LAST EMBER</h1>
+  <p class="tagline">Ten realms. One flame. Relight the Hearth.</p>
+  <div class="menu">
+    <button class="primary" id="btnStart">Begin</button>
+    <button class="primary" id="btnContinue" style="display:none">Continue</button>
+    <button id="btnSelect" style="display:none">Level select</button>
+    <button id="btnHelp">How to play</button>
+  </div>
+  <p class="foot">Best played with sound on</p>
+</div>
+
+<div class="overlay" id="pause">
+  <div class="panel">
+    <p class="eyebrow">Game menu</p>
+    <h3 class="ptitle">Paused</h3>
+    <p class="psub" id="pauseLevel"></p>
+    <div class="menu" style="margin:0 auto">
+      <button class="primary" id="btnResume">Resume</button>
+      <button id="btnPauseHelp">How to play</button>
+      <button id="btnPauseSelect">Level select</button>
+      <button id="btnPauseMenu">Main menu</button>
+      <button class="quiet" id="btnMute">Mute</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="help">
+  <div class="panel wide">
+    <p class="eyebrow">How to play</p>
+    <p class="goal">Gather every <b>Hearth shard</b> in a realm, then step into the glowing portal. Collect embers: every 10 restores a heart. Burn the Gloom with your <b>Flare</b>. Lanterns save your place.</p>
+    <div class="ctl-grid">
+      <h4>Move</h4>
+      <div class="row"><span class="act">Move<small>Relative to the camera</small></span><span class="keys"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd><kbd>arrows</kbd></span></div>
+      <div class="row"><span class="act">Jump<small>Press again in the air for a double jump</small></span><span class="keys"><kbd>Space</kbd></span></div>
+      <div class="row"><span class="act">Glide<small>Hold after the double jump</small></span><span class="keys"><kbd>hold Space</kbd></span></div>
+      <div class="row"><span class="act">Dash<small>Burns wisps. Once per air time</small></span><span class="keys"><kbd>Shift</kbd><kbd>Q</kbd></span></div>
+      <h4>Light</h4>
+      <div class="row"><span class="act">Flare<small>Burns Gloom, wakes light bridges, hurts the boss</small></span><span class="keys"><kbd>F</kbd><kbd>E</kbd><kbd>click</kbd></span></div>
+      <div class="row"><span class="act">Grapple<small>Zip to the golden ring you face</small></span><span class="keys"><kbd>G</kbd></span></div>
+      <h4>Camera and game</h4>
+      <div class="row"><span class="act">Rotate camera</span><span class="keys"><kbd>mouse drag</kbd><kbd>Z</kbd><kbd>X</kbd></span></div>
+      <div class="row"><span class="act">Tilt camera</span><span class="keys"><kbd>R</kbd><kbd>V</kbd></span></div>
+      <div class="row"><span class="act">Zoom<small>Closer with + or wheel up, farther with - or wheel down</small></span><span class="keys"><kbd>+</kbd><kbd>-</kbd><kbd>wheel</kbd></span></div>
+      <div class="row"><span class="act">Pause menu</span><span class="keys"><kbd>P</kbd><kbd>Esc</kbd></span></div>
+      <div class="row"><span class="act">Mute sound</span><span class="keys"><kbd>M</kbd></span></div>
+      <h4>Gamepad and touch</h4>
+      <div class="row"><span class="act">Gamepad<small>Sticks move and look. A jump, B dash, X flare, Y grapple, Start pause, triggers zoom</small></span><span class="keys"><kbd>A</kbd><kbd>B</kbd><kbd>X</kbd><kbd>Y</kbd></span></div>
+      <div class="row"><span class="act">Touch<small>On-screen stick and buttons, drag to look, pinch to zoom</small></span><span class="keys"><kbd>stick</kbd><kbd>buttons</kbd></span></div>
+    </div>
+    <div class="menu inline" style="margin-top:26px"><button class="primary" id="btnHelpBack">Back</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="select">
+  <p class="eyebrow">Time trial</p>
+  <h3 class="ptitle">Level select</h3>
+  <p class="psub" style="margin-bottom:18px">Replay any unlocked level, beat your best time and race your ghost</p>
+  <div class="lvgrid" id="selectGrid"></div>
+  <div class="menu inline"><button class="primary" id="btnSelectBack">Back</button></div>
+</div>
+
+<div class="overlay" id="card">
+  <div class="panel">
+    <p class="eyebrow" id="cardTop"></p>
+    <h3 class="ptitle" id="cardTitle"></h3>
+    <div id="cardBody"></div>
+    <div class="btns"><button class="primary" id="cardBtn">Continue</button><button id="cardBtn2" style="display:none">Retry</button></div>
+  </div>
+</div>
+
+<div id="touch">
+  <div class="stick" id="tStick"><i></i></div>
+  <div class="tb" id="tJump" style="right:30px;bottom:50px">JUMP</div>
+  <div class="tb" id="tDash" style="right:116px;bottom:30px">DASH</div>
+  <div class="tb" id="tFlare" style="right:30px;bottom:136px">FLARE</div>
+  <div class="tb" id="tGrap" style="right:116px;bottom:116px">GRAB</div>
+  <div class="tb pausebtn" id="tPause">II</div>
+</div>
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>
