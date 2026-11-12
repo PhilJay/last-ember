@@ -64,6 +64,8 @@
   .ctl-grid h4:first-child { margin-top: 0; }
   .row { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 9px 0; border-bottom: 1px solid #ffffff12; font-size: 16px; }
   .row .act small { display: block; font-family: var(--ui); font-size: 12px; color: #f3e6d088; letter-spacing: .3px; margin-top: 2px; }
+  .dot { display: inline-block; width: 11px; height: 11px; border-radius: 50%; margin-right: 10px; vertical-align: -1px; box-shadow: 0 0 8px currentColor; background: currentColor; }
+  .dot.sq { border-radius: 2px; }
   .keys { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
   kbd { font-family: var(--ui); display: inline-block; min-width: 30px; padding: 4px 9px; text-align: center; font-size: 12px; font-weight: 700; color: #ffe9b8; background: #ffffff12; border: 1px solid #ffd27a66; border-bottom-width: 3px; border-radius: 7px; letter-spacing: .5px; }
   .goal { text-align: left; font-size: 17px; line-height: 1.6; color: #f3e6d0; margin: 0 0 22px; padding: 14px 18px; border-left: 3px solid var(--ember); background: #ffffff08; border-radius: 0 10px 10px 0; }
@@ -144,6 +146,30 @@
       <div class="row"><span class="act">Zoom<small>Closer with + or wheel up, farther with - or wheel down</small></span><span class="keys"><kbd>+</kbd><kbd>-</kbd><kbd>wheel</kbd></span></div>
       <div class="row"><span class="act">Pause menu</span><span class="keys"><kbd>P</kbd><kbd>Esc</kbd></span></div>
       <div class="row"><span class="act">Mute sound</span><span class="keys"><kbd>M</kbd></span></div>
+      <h4>Collect</h4>
+      <div class="row"><span class="act"><span class="dot" style="color:#ffd27a"></span>Hearth shard<small>Gather all of them in a realm to open the portal</small></span></div>
+      <div class="row"><span class="act"><span class="dot" style="color:#ff8a30"></span>Ember<small>Every 10 restores a heart</small></span></div>
+      <div class="row"><span class="act"><span class="dot sq" style="color:#ffe9b8"></span>Diary page<small>Hidden, often on a secret side platform. Tells the Keeper's story</small></span></div>
+      <div class="row"><span class="act"><span class="dot" style="color:#4aa8ff"></span>Power-up orbs<small>Shield blocks one hit, Swift runs faster, Moon lowers gravity, Magnet pulls pickups to you</small></span></div>
+      <div class="row"><span class="act"><span class="dot" style="color:#ffd27a"></span>Golden Flame<small>Waits at the end of the Keeper's Trial. Restores hearts and gives a bonus star</small></span></div>
+      <h4>Helpers</h4>
+      <div class="row"><span class="act"><span class="dot" style="color:#ffb347"></span>Lantern<small>Lights up as a checkpoint. In flood levels it also pushes the Gloom back</small></span></div>
+      <div class="row"><span class="act"><span class="dot" style="color:#7affb0"></span>Bounce pad<small>Launches you high and refills your jump and dash</small></span></div>
+      <div class="row"><span class="act"><span class="dot" style="color:#ffd27a"></span>Golden ring<small>Face it and press Grapple to zip across big gaps</small></span></div>
+      <div class="row"><span class="act"><span class="dot sq" style="color:#c9a8ff"></span>Keeper's Trial gate<small>Step in to start a short bonus course. Reach its flame to win a prize</small></span></div>
+      <h4>Dangers</h4>
+      <div class="row"><span class="act"><span class="dot" style="color:#8a4aff"></span>Gloom wisp<small>Hurts on touch. Burn it with the Flare or a dash</small></span></div>
+      <div class="row"><span class="act"><span class="dot" style="color:#ff4aa8"></span>Spitter<small>A bigger wisp that shoots dark bolts. Dodge or Flare it</small></span></div>
+      <div class="row"><span class="act"><span class="dot sq" style="color:#ff6a4a"></span>Spinning blade<small>Sweeps across the platform. Time your jump over it</small></span></div>
+      <div class="row"><span class="act"><span class="dot" style="color:#ffa040"></span>Steam geyser<small>Glows, then erupts on a timer. Stay off the glowing ring</small></span></div>
+      <div class="row"><span class="act"><span class="dot" style="color:#b48cff"></span>Rising Gloom<small>In flood levels the dark climbs the stairs behind you. Keep moving up</small></span></div>
+      <div class="row"><span class="act"><span class="dot" style="color:#9cd8ff"></span>Wind<small>Gusts push you through the air. Steer against them</small></span></div>
+      <h4>Ground types</h4>
+      <div class="row"><span class="act"><span class="dot sq" style="color:#bfe9ff"></span>Ice<small>Slippery. You keep sliding after you let go</small></span></div>
+      <div class="row"><span class="act"><span class="dot sq" style="color:#e8c07a"></span>Moving platform<small>Slides back and forth and carries you with it</small></span></div>
+      <div class="row"><span class="act"><span class="dot sq" style="color:#c08a5a"></span>Crumbling stone<small>Shakes and falls away shortly after you land</small></span></div>
+      <div class="row"><span class="act"><span class="dot sq" style="color:#a0a0ff"></span>Fading platform<small>Appears and disappears on a timer. Wait for it</small></span></div>
+      <div class="row"><span class="act"><span class="dot sq" style="color:#fff0a0"></span>Light bridge<small>Only solid while lit. Use the Flare nearby to wake it for a few seconds</small></span></div>
       <h4>Gamepad and touch</h4>
       <div class="row"><span class="act">Gamepad<small>Sticks move and look. A jump, B dash, X flare, Y grapple, Start pause, triggers zoom</small></span><span class="keys"><kbd>A</kbd><kbd>B</kbd><kbd>X</kbd><kbd>Y</kbd></span></div>
       <div class="row"><span class="act">Touch<small>On-screen stick and buttons, drag to look, pinch to zoom</small></span><span class="keys"><kbd>stick</kbd><kbd>buttons</kbd></span></div>
