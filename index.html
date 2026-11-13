@@ -4,11 +4,20 @@
 <meta charset="utf-8">
 <title>Last Ember</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 10 10%27%3E%3Ccircle cx=%275%27 cy=%276%27 r=%273%27 fill=%27%23ff7a3a%27/%3E%3C/svg%3E">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <style>
   * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; overflow: hidden; background: #0a0a12; font-family: Georgia, 'Times New Roman', serif; color: #fff4e0; user-select: none; }
-  canvas { display: block; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #0a0a12; font-family: Georgia, 'Times New Roman', serif; color: #fff4e0; user-select: none; touch-action: none; overscroll-behavior: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
+  canvas { display: block; touch-action: none; }
+  #rotate { position: fixed; inset: 0; z-index: 50; display: none; align-items: center; justify-content: center; flex-direction: column; background: #0a0a12f2; text-align: center; padding: 30px; font-size: 20px; line-height: 1.5; color: #ffe9b8; }
+  #rotate b { font-size: 46px; display: block; margin-bottom: 10px; }
+  @media (pointer: coarse) and (orientation: portrait) { #rotate { display: flex; } }
+  .setrow { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 0; border-bottom: 1px solid #ffffff12; text-align: left; font-size: 17px; }
+  .setrow small { display: block; font-family: var(--ui); font-size: 12px; color: #f3e6d088; margin-top: 2px; }
+  .setrow input[type=range] { width: 190px; accent-color: #ffb347; }
+  .setrow input[type=checkbox] { width: 22px; height: 22px; accent-color: #ffb347; }
+  .setrow select { font: inherit; font-family: var(--ui); font-size: 14px; background: #ffffff14; color: #ffe9b8; border: 1px solid #ffd27a66; border-radius: 8px; padding: 6px 10px; }
+  .setrow output { font-family: var(--ui); font-size: 13px; min-width: 44px; text-align: right; color: #ffd27a; }
   #hud { position: fixed; inset: 0; pointer-events: none; display: none; text-shadow: 0 2px 8px #000a; }
   #hud .tl { position: absolute; left: 24px; top: 18px; font-size: 30px; letter-spacing: 4px; color: #ff6b4a; }
   #hud .tr { position: absolute; right: 24px; top: 18px; text-align: right; font-size: 22px; line-height: 1.5; }
@@ -35,7 +44,7 @@
   #toast { position: absolute; left: 0; right: 0; top: 22%; text-align: center; font-size: 22px; font-style: italic; opacity: 0; transition: opacity .5s; text-shadow: 0 2px 10px #000; }
   #flash { position: fixed; inset: 0; pointer-events: none; background: radial-gradient(circle, transparent 40%, #ff1a1acc); opacity: 0; transition: opacity .4s; }
   :root { --gold: #ffd27a; --ember: #ff8a65; --ui: ui-sans-serif, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-  .overlay { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; flex-direction: column; text-align: center; padding: 24px; background: radial-gradient(ellipse at center, #1b123099 0%, #05050cdd 100%); backdrop-filter: blur(5px); overflow-y: auto; }
+  .overlay { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; flex-direction: column; text-align: center; padding: 24px; background: radial-gradient(ellipse at center, #1b123099 0%, #05050cdd 100%); backdrop-filter: blur(5px); overflow-y: auto; touch-action: pan-y; }
   .overlay.show { display: flex; }
   .panel { width: min(560px, 94vw); padding: 30px 34px; background: #140e24d9; border: 1px solid #ffd27a33; border-radius: 16px; box-shadow: 0 20px 60px #000a, inset 0 1px 0 #ffffff14; backdrop-filter: blur(10px); }
   .panel.wide { width: min(880px, 94vw); }
@@ -108,6 +117,7 @@
     <button class="primary" id="btnContinue" style="display:none">Continue</button>
     <button id="btnSelect" style="display:none">Level select</button>
     <button id="btnHelp">How to play</button>
+    <button id="btnSettings">Settings</button>
   </div>
   <p class="foot">Best played with sound on</p>
 </div>
@@ -120,12 +130,29 @@
     <div class="menu" style="margin:0 auto">
       <button class="primary" id="btnResume">Resume</button>
       <button id="btnPauseHelp">How to play</button>
+      <button id="btnPauseSettings">Settings</button>
       <button id="btnPauseSelect">Level select</button>
       <button id="btnPauseMenu">Main menu</button>
       <button class="quiet" id="btnMute">Mute</button>
     </div>
   </div>
 </div>
+
+<div class="overlay" id="settings">
+  <div class="panel">
+    <p class="eyebrow">Settings</p>
+    <div class="setrow"><span>Look sensitivity<small>Mouse, trackpad, stick and touch</small></span><span style="display:flex;gap:10px;align-items:center"><input type="range" id="setSens" min="0.4" max="2.5" step="0.1"><output id="setSensVal"></output></span></div>
+    <div class="setrow"><span>Invert vertical look</span><input type="checkbox" id="setInvert"></div>
+    <div class="setrow"><span>Volume</span><span style="display:flex;gap:10px;align-items:center"><input type="range" id="setVol" min="0" max="1" step="0.05"><output id="setVolVal"></output></span></div>
+    <div class="setrow"><span>Graphics<small>Auto lowers the sharpness if the game runs slowly</small></span><select id="setQuality"><option value="auto">Auto</option><option value="high">High</option><option value="low">Low</option></select></div>
+    <div class="menu" style="margin:22px auto 0">
+      <button id="btnFull">Fullscreen</button>
+      <button class="primary" id="btnSettingsBack">Back</button>
+    </div>
+  </div>
+</div>
+
+<div id="rotate"><div><b>&#8635;</b>Rotate your device<br>to landscape to play</div></div>
 
 <div class="overlay" id="help">
   <div class="panel wide">
@@ -138,18 +165,18 @@
       <div class="row"><span class="act">Glide<small>Hold after the double jump</small></span><span class="keys"><kbd>hold Space</kbd></span></div>
       <div class="row"><span class="act">Dash<small>Burns wisps. Once per air time</small></span><span class="keys"><kbd>Shift</kbd><kbd>Q</kbd></span></div>
       <h4>Light</h4>
-      <div class="row"><span class="act">Flare<small>Burns Gloom, wakes light bridges, hurts the boss</small></span><span class="keys"><kbd>F</kbd><kbd>E</kbd><kbd>click</kbd></span></div>
+      <div class="row"><span class="act">Flare<small>Burns Gloom, wakes light bridges, warms the Cold Heart</small></span><span class="keys"><kbd>F</kbd><kbd>E</kbd><kbd>click</kbd></span></div>
       <div class="row"><span class="act">Grapple<small>Zip to the golden ring you face</small></span><span class="keys"><kbd>G</kbd></span></div>
       <h4>Camera and game</h4>
-      <div class="row"><span class="act">Rotate camera</span><span class="keys"><kbd>mouse drag</kbd><kbd>Z</kbd><kbd>X</kbd></span></div>
+      <div class="row"><span class="act">Look around<small>Click the game once to capture the mouse, then move it or swipe the trackpad. Esc lets go</small></span><span class="keys"><kbd>mouse</kbd><kbd>Z</kbd><kbd>X</kbd></span></div>
       <div class="row"><span class="act">Tilt camera</span><span class="keys"><kbd>R</kbd><kbd>V</kbd></span></div>
-      <div class="row"><span class="act">Zoom<small>Closer with + or wheel up, farther with - or wheel down</small></span><span class="keys"><kbd>+</kbd><kbd>-</kbd><kbd>wheel</kbd></span></div>
+      <div class="row"><span class="act">Zoom<small>Closer with + or scroll up, farther with - or scroll down. Pinch on a trackpad works too</small></span><span class="keys"><kbd>+</kbd><kbd>-</kbd><kbd>wheel</kbd></span></div>
       <div class="row"><span class="act">Pause menu</span><span class="keys"><kbd>P</kbd><kbd>Esc</kbd></span></div>
       <div class="row"><span class="act">Mute sound</span><span class="keys"><kbd>M</kbd></span></div>
       <h4>Collect</h4>
       <div class="row"><span class="act"><span class="dot" style="color:#ffd27a"></span>Hearth shard<small>Gather all of them in a realm to open the portal</small></span></div>
       <div class="row"><span class="act"><span class="dot" style="color:#ff8a30"></span>Ember<small>Every 10 restores a heart</small></span></div>
-      <div class="row"><span class="act"><span class="dot sq" style="color:#ffe9b8"></span>Diary page<small>Hidden, often on a secret side platform. Tells the Keeper's story</small></span></div>
+      <div class="row"><span class="act"><span class="dot sq" style="color:#ffe9b8"></span>Diary page<small>Hidden, often on a secret side platform. Tells the Keeper's story and unlocks an echo at the end of the realm</small></span></div>
       <div class="row"><span class="act"><span class="dot" style="color:#4aa8ff"></span>Power-up orbs<small>Shield blocks one hit, Swift runs faster, Moon lowers gravity, Magnet pulls pickups to you</small></span></div>
       <div class="row"><span class="act"><span class="dot" style="color:#ffd27a"></span>Golden Flame<small>Waits at the end of the Keeper's Trial. Restores hearts and gives a bonus star</small></span></div>
       <h4>Helpers</h4>
@@ -202,6 +229,7 @@
   <div class="tb" id="tFlare" style="right:30px;bottom:136px">FLARE</div>
   <div class="tb" id="tGrap" style="right:116px;bottom:116px">GRAB</div>
   <div class="tb pausebtn" id="tPause">II</div>
+  <div class="tb pausebtn" id="tFull" style="top:70px">&#9974;</div>
 </div>
 <script type="module" src="./src/main.js"></script>
 </body>

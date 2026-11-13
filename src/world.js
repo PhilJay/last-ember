@@ -199,7 +199,7 @@ export function makeBoss() {
   const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: GLOW, color: 0x9a30ff, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, opacity: 0.7 }));
   halo.scale.set(14, 14, 1);
   g.add(halo);
-  g.userData = { core, rings, mat };
+  g.userData = { core, rings, mat, halo };
   return g;
 }
 

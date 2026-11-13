@@ -22,6 +22,7 @@ export const LEVELS = [
     ],
     hint: 'Shift dashes (and burns wisps). Green pads launch you. Find the hidden diary page.',
     lore: 'Day 1. Mother says I am old enough to tend the Hearth. I am so proud I could burst. It is warm here, and everyone smiles when they pass the window.',
+    echo: 'A warm hand rests on a small shoulder in the memory. Somewhere inside you, Cinder hums the tune before you hear it.',
     intro: [
       'The forest remembers warmth. Moss still glows where the old fire once touched it.',
       'A wisp of Gloom drifts between the trees. It cannot stand your light. Press <b>F</b> and your Flare will burn it away. Hold <b>Shift</b> to dash: wisps cannot survive a dash either.',
@@ -44,6 +45,7 @@ export const LEVELS = [
     ],
     hint: 'Ice is slippery. When the gale blows, it pushes you in the air.',
     lore: 'Day 212. Frostfall is quiet now. The families stopped coming when the snow got deep. I light the Hearth anyway, in case they remember the way.',
+    echo: 'Footprints in the snow lead to the window, and stop. <i>"Someone used to wait here,"</i> says Cinder, and does not say who.',
     intro: [
       'Here the cold bites harder than the Gloom itself. The ice is as smooth as a held breath.',
       'Some wisps have learned to hunt. They will follow you across the frozen bridges, so keep your Flare ready. And when the gale rises, the wind will push you through the air.',
@@ -66,6 +68,7 @@ export const LEVELS = [
     ],
     hint: 'Hop over spinning blades. Geysers glow before they erupt. Lanterns save your place.',
     lore: 'Day 600. The smiths have gone. I told the Hearth they would be back by spring. It flickered at me. I think it knew I was lying.',
+    echo: 'The anvils glow for a heartbeat. <i>"Spring never came,"</i> Cinder murmurs. <i>"I am sorry I never told you that."</i>',
     intro: [
       'The forge-city of the Hearth smiths. Its fires burned so hot that the ground never forgot.',
       'The old stones crumble beneath you. Do not stand still, and do not trust the cracks. The smiths\' blades still spin, and the geysers still wake. Light the old lanterns to save your place.',
@@ -88,6 +91,7 @@ export const LEVELS = [
     ],
     hint: 'Ghost platforms fade in and out. Spitters fire dark orbs: burn them with Flare.',
     lore: 'Day 901. The library flooded. I saved one book and it is blank. I do not think I can write anything good in it anymore.',
+    echo: 'The blank book glows faintly in your mind. <i>"Write anything,"</i> says Cinder. <i>"A first line is enough. I always told them that."</i>',
     intro: [
       'Water has swallowed the great library, but the books still float, whispering every story the Hearth ever warmed.',
       'One of them is open. It tells of a Keeper, a child who tended the Hearth alone through the longest winter. Some shelves flicker in and out of the water, and the Spitters guard the aisles.',
@@ -110,6 +114,7 @@ export const LEVELS = [
     ],
     hint: 'The Gloom is rising behind you. Keep climbing. Lanterns push it back.',
     lore: 'Day 1200. It rose tonight, the dark. I think it is me. I think I am the one making it. I do not know how to make it stop.',
+    echo: 'The dark rises, and Cinder holds very still. <i>"I know this cold. I felt it the night I stopped being able to reach them."</i>',
     intro: [
       'Night falls early in the fifth realm, and it does not fall from the sky. It rises from the ground like a tide of ink.',
       'The Gloom is moving, and it is coming for you. Climb the old stair of lamps. Do not stand still, and do not stop to look down.',
@@ -132,6 +137,7 @@ export const LEVELS = [
     ],
     hint: 'Light bridges and strong gusts. Flare the dark gaps and time your jumps against the wind.',
     lore: 'Day 1500. I planted a tree for everyone who left. I stopped counting at forty. They do not grow. They only shine, and they break when the wind blows.',
+    echo: 'Every glass tree rings softly. <i>"Forty trees,"</i> Cinder whispers. <i>"I counted too. I counted every one."</i>',
     intro: [
       'The orchard was the Keeper\'s first attempt at hope: one tree for everyone who left. But the trees turned to glass, and the glass remembers every face.',
       'The bridges between the branches only exist in firelight, and the wind carries the sound of old goodbyes. Use your Flare, and mind the gusts.',
@@ -154,6 +160,7 @@ export const LEVELS = [
     ],
     hint: 'Blades, steam geysers and moving gears. Everything here runs on a rhythm: learn it.',
     lore: 'Day 1800. I built a clock that only counts to the moment they left. It never gets any later. Maybe that is exactly what I wanted.',
+    echo: 'The clock ticks backward for a beat. <i>"It is all right to let the hour move,"</i> says Cinder. <i>"It was never your fault that it stopped."</i>',
     intro: [
       'A tower of brass and stopped clocks, built by someone who wanted winter never to end, because the alternative was the spring that would not bring anyone back.',
       'Every gear here still turns, out of habit. Blades sweep, steam bursts, and the floors slide on rails. Learn the rhythm.',
@@ -176,6 +183,7 @@ export const LEVELS = [
     ],
     hint: 'Wide gaps: glide after your double jump, and grapple to the golden rings.',
     lore: 'Day 2100. I asked the stars to bring the Hearth back. They fell instead, one by one. I think they were only trying to come to me.',
+    echo: 'A star lands in your light and goes quiet. <i>"They were never falling away from the Keeper,"</i> says Cinder. <i>"They were falling toward home."</i>',
     intro: [
       'On the longest night of the Keeper\'s life, they climbed this mountain and begged the stars to relight the Hearth. The stars answered by falling.',
       'The wreckage floats here, island after island, with gaps wider than any jump. Glide. Grapple. Trust the rings.',
@@ -198,6 +206,7 @@ export const LEVELS = [
     ],
     hint: 'The flood rises fast. Light every lantern, and never stop climbing.',
     lore: 'Day 2400. I cried until the floor was gone. The dark rose to meet me. It was warm in a terrible way, and I let it in.',
+    echo: 'The water goes still around you. Cinder sings three notes of a lullaby, small and cracked. <i>"I could not reach them down here. Now I can."</i>',
     intro: [
       'This is where the Keeper finally broke. They cried until the world had no floor, and the dark rose to meet them, warm and endless.',
       'The flood is faster than the night, and meaner. Light every lantern, use every ring, and do not stop climbing.',
@@ -219,7 +228,7 @@ export const LEVELS = [
       { at: 0.9, text: 'Whatever is up there was a person once. Remember that when you flare.' },
     ],
     boss: true, endSize: 22,
-    hint: 'Climb to the Cold Heart. Flare burns it. Jump or dash through its shockwaves and shots.',
+    hint: 'Climb to the Cold Heart. Flare warms it. Jump or dash through its shockwaves and shots.',
     lore: 'Last page. If you are reading this, the fire is still out. Please do not be angry with me. I only did not want to be alone while it went out.',
     intro: [
       'The last realm hangs upside down in the sky, a staircase of broken glass leading to the Cold Heart, where the Hearth once stood.',
@@ -233,20 +242,47 @@ export const BOSS_DEAD = {
   top: 'The Cold Heart',
   title: 'The Gloom Cracks',
   body: [
-    'The dark shell splits like an eggshell, and inside is not a monster, but a child holding a lantern that is far too big for their hands.',
+    'The dark shell warms, softens, and splits like an eggshell. Inside is not a monster, but a child holding a lantern that is far too big for their hands.',
     '<i>"I only wanted it to stop hurting,"</i> says the Keeper. <i>"When the fire went out, I wrapped myself in the dark so no one could take anything else from me."</i>',
-    'Ember glows softly. <i>"You do not have to keep it alone anymore."</i> Walk to the Hearth, and light it together.',
+    'The voice inside you steps forward, brighter than it has ever been. <i>"I should have told you who I am. I am the first flame the Keeper\'s mother lit in this Hearth. When she went out, I hid in the last spark I could find, so someone could carry me home."</i>',
+    'Ember glows softly. <i>"You do not have to keep it alone anymore."</i> Walk to the Hearth.',
   ],
 };
 
-export const ENDING = {
-  top: 'Epilogue',
-  title: 'The Hearth Burns Again',
+export const CHOICE = {
+  top: 'The Hearth',
+  title: 'One Last Choice',
   body: [
-    'You place the last shard. The Hearth wakes, and warmth rolls across all ten realms: the moss, the frost, the cinders, the drowned books, the glass, the gears and the stars.',
-    'The Keeper takes your hand, small light in small light. In windows far below, a thousand lamps flicker on, one by one.',
-    'The Gloom was never the end of the fire. It was only the fire, waiting to be shared.',
+    'The Hearth stands cold, and the last shard is warm in your light. Cinder, the Keeper and you stand around it.',
+    'There are two ways to wake it. You can place the shard and light it <b>together</b>, three small flames sharing one fire. Or you can step into the Hearth and <b>become</b> it, burning steady for the world.',
   ],
+  together: 'Light it together',
+  become: 'Become the Hearth',
 };
 
-export const DIARY_BONUS = 'And in the Keeper\'s blank book, in a careful child\'s hand, a first line appears: <i>"Today the Hearth is warm."</i> (You found every diary page.)';
+export const ENDINGS = {
+  together: {
+    top: 'Epilogue',
+    title: 'The Hearth Burns Again',
+    body: [
+      'You place the last shard. The Hearth wakes, and warmth rolls across all ten realms: the moss, the frost, the cinders, the drowned books, the glass, the gears and the stars.',
+      'The Keeper takes your hand, small light in small light, and Cinder settles between you like a lullaby coming home. In windows far below, a thousand lamps flicker on, one by one.',
+      'The Gloom was never the end of the fire. It was only the fire, waiting to be shared.',
+    ],
+  },
+  become: {
+    top: 'Epilogue',
+    title: 'The Fire That Stays',
+    body: [
+      'You step into the Hearth, and it does not hurt. It feels like being remembered. The shards sing, the dark lets go, and warmth rolls across all ten realms: the moss, the frost, the cinders, the drowned books, the glass, the gears and the stars.',
+      'The Keeper kneels by the fire and does not look away. Cinder leaves your light and settles on their shoulder, a small warmth that goes wherever they go.',
+      'Every night, a child tends a Hearth that has a heartbeat now. And every night, it burns a little brighter when they say hello.',
+    ],
+  },
+};
+
+export const DIARY_TIERS = [
+  { min: 0, text: 'Most of the Keeper\'s diary is still unread. They smile anyway, and promise to write the rest down, someday, with you in it.' },
+  { min: 4, text: 'You read most of the diary. The Keeper nods. <i>"You know the worst of me,"</i> they say, <i>"and you stayed."</i>' },
+  { min: 10, text: 'And in the Keeper\'s blank book, in a careful child\'s hand, a first line appears: <i>"Today the Hearth is warm."</i> Cinder hums the whole lullaby, and the Keeper hums it back. (You found every diary page.)' },
+];

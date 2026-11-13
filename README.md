@@ -10,7 +10,7 @@ A 3D platformer that runs in your browser. You are Ember, the last spark in a wo
 
 The Hearth once burned at the center of the world. Then the Gloom came, a creeping dark that drinks light. The Hearth shattered into shards and went out, and the shards were scattered across ten forgotten realms.
 
-You are Ember, the last spark, no bigger than a thought. Cinder, a small voice inside you, guides you with hints in every realm. Gather the shards, and relight the Hearth. Along the way you find pages from the diary of the Keeper, who tended the Hearth. Find every page for a bonus line in the ending.
+You are Ember, the last spark, no bigger than a thought. Cinder, a small voice inside you, guides you with hints in every realm. Gather the shards, and relight the Hearth. Along the way you find pages from the diary of the Keeper, who tended the Hearth. Cinder is more than a guide, and the Keeper is not what they seem. Find every page to learn the whole story.
 
 ## The ten realms
 
@@ -43,19 +43,19 @@ Collect the shards and reach the portal at the end of each realm. You have five 
 | Dash | Shift or Q | B or RB | Button |
 | Flare | F, E or click | X or LB | Button |
 | Grapple | G | Y | Button |
-| Rotate camera | Mouse drag, Z, X | Right stick | Drag |
+| Look around | Mouse or trackpad (click once to capture, Esc to release), Z, X | Right stick | Drag |
 | Tilt camera | R, V | Right stick | Drag |
-| Zoom | Wheel, + and - | Triggers | Pinch |
+| Zoom | Scroll, trackpad pinch, + and - | Triggers | Pinch |
 | Pause menu | P or Esc | Start | Button |
 | Mute | M | | |
 
-**Flare** burns the Gloom, wakes light bridges and hurts the boss. **Grapple** zips you to the golden ring you are facing. **Dash** burns through wisps and can only be used once per air time.
+**Flare** burns the Gloom, wakes light bridges and warms the Cold Heart. **Grapple** zips you to the golden ring you are facing. **Dash** burns through wisps and can only be used once per air time.
 
 ## What you find along the way
 
 - **Shards**: pieces of the Hearth. Collect them all in a realm for a better rating, and carry the last ones to the final Hearth.
 - **Embers**: small pickups that add to your score.
-- **Diary pages**: one hidden in each realm, often on a secret side platform. They tell the Keeper's story and add to the ending.
+- **Diary pages**: one hidden in each realm, often on a secret side platform. They tell the Keeper's story, unlock an echo at the end of that realm, and change the ending.
 - **Lanterns and bounce pads**: lanterns light your way, pads launch you upward.
 - **Power-ups**: shield, speed, moon (floatier jumps) and magnet (pulls pickups to you).
 - **Challenge courses**: optional trials with a Golden Flame reward.
@@ -63,6 +63,14 @@ Collect the shards and reach the portal at the end of each realm. You have five 
 - **Stars and times**: each level has a par time and a three-star rating.
 
 ![Starfall Reach](docs/level8.jpg)
+
+## Two endings
+
+At the Hearth you make one last choice: light it together with Cinder and the Keeper, or become the Hearth yourself. Both endings change with how many diary pages you found.
+
+## Settings
+
+Look sensitivity, invert vertical look, volume, graphics quality (auto lowers the sharpness on slow devices) and fullscreen. The game pauses when you switch tabs or windows. On a phone, turn it sideways.
 
 ## Level select
 

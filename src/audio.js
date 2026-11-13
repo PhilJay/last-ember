@@ -3,6 +3,8 @@ let master = null;
 let musicTimer = null;
 let scale = [0, 3, 5, 7, 10];
 let base = 220;
+let volume = 0.5;
+let muted = false;
 
 export function initAudio() {
   if (ctx) { if (ctx.state === 'suspended') ctx.resume(); return; }
@@ -10,7 +12,7 @@ export function initAudio() {
   if (!AC) return;
   ctx = new AC();
   master = ctx.createGain();
-  master.gain.value = 0.5;
+  master.gain.value = muted ? 0 : volume;
   master.connect(ctx.destination);
 }
 
@@ -78,9 +80,13 @@ export function stopMusic() {
   musicTimer = null;
 }
 
-let muted = false;
+export function setVolume(v) {
+  volume = v;
+  if (master && !muted) master.gain.value = v;
+}
+
 export function toggleMute() {
   muted = !muted;
-  if (master) master.gain.value = muted ? 0 : 0.5;
+  if (master) master.gain.value = muted ? 0 : volume;
   return muted;
 }

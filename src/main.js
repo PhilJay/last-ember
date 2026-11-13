@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { LEVELS, PROLOGUE, BOSS_DEAD, ENDING, DIARY_BONUS } from './levels.js';
-import { initAudio, sfx, startMusic, stopMusic, toggleMute } from './audio.js';
+import { LEVELS, PROLOGUE, BOSS_DEAD, CHOICE, ENDINGS, DIARY_TIERS } from './levels.js';
+import { setVolume, initAudio, sfx, startMusic, stopMusic, toggleMute } from './audio.js';
 import {
   clamp, lerp, generate, makePlatformMesh, makeShard, makeEmber, makeWisp, makeBoss,
   makePortal, makeHearth, makeKeeper, makeDecor, makeStars, makePad, makeLantern, makePowerup,
@@ -10,8 +10,14 @@ import {
 const $ = (id) => document.getElementById(id);
 
 // ---------- renderer ----------
+const CFG = { sens: 1, invertY: false, volume: 0.5, quality: 'auto' };
+try { Object.assign(CFG, JSON.parse(localStorage.getItem('lastEmber.settings') || '{}')); } catch { /* ignore bad settings */ }
+const saveCfg = () => localStorage.setItem('lastEmber.settings', JSON.stringify(CFG));
+const maxRatio = Math.min(devicePixelRatio, 2);
+let autoRatio = maxRatio;
+const wantedRatio = () => (CFG.quality === 'low' ? 1 : CFG.quality === 'high' ? maxRatio : autoRatio);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setPixelRatio(wantedRatio());
 renderer.setSize(innerWidth, innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFShadowMap;
@@ -29,6 +35,10 @@ Object.assign(sun.shadow.camera, { left: -32, right: 32, top: 32, bottom: -32, n
 sun.shadow.bias = -0.0004;
 scene.add(sun, sun.target);
 
+function applyQuality() {
+  renderer.setPixelRatio(wantedRatio());
+  renderer.setSize(innerWidth, innerHeight);
+}
 addEventListener('resize', () => {
   renderer.setSize(innerWidth, innerHeight);
   camera.aspect = innerWidth / innerHeight;
@@ -206,7 +216,8 @@ addEventListener('keydown', (e) => {
   if (e.code === 'Escape') pauseGame();
 });
 addEventListener('keyup', (e) => { keys[e.code] = false; });
-addEventListener('blur', () => { for (const k in keys) keys[k] = false; });
+addEventListener('blur', () => { for (const k in keys) keys[k] = false; pauseGame(); });
+document.addEventListener('visibilitychange', () => { if (document.hidden) pauseGame(); });
 
 const canvas = renderer.domElement;
 canvas.addEventListener('mousedown', (e) => {
@@ -221,11 +232,19 @@ addEventListener('contextmenu', (e) => e.preventDefault());
 addEventListener('mousemove', (e) => {
   if (S.mode !== 'play') return;
   if (document.pointerLockElement !== canvas && !dragging) return;
-  cam.yaw -= e.movementX * 0.0028;
-  cam.pitch = clamp(cam.pitch + e.movementY * 0.0028, -0.15, 1.3);
+  lookBy(e.movementX * 0.0028, e.movementY * 0.0028);
 });
+function lookBy(dx, dy) {
+  cam.yaw -= dx * CFG.sens;
+  cam.pitch = clamp(cam.pitch + dy * CFG.sens * (CFG.invertY ? -1 : 1), -0.15, 1.3);
+}
 const zoomBy = (d) => { cam.dist = clamp(cam.dist + d, 5, 16); };
-addEventListener('wheel', (e) => { zoomBy(Math.sign(e.deltaY) * 0.8); });
+addEventListener('wheel', (e) => {
+  if (S.mode !== 'play') { if (e.ctrlKey) e.preventDefault(); return; }
+  e.preventDefault();
+  const px = e.deltaY * (e.deltaMode === 1 ? 16 : 1);
+  zoomBy(clamp(px * (e.ctrlKey ? 0.05 : 0.01), -1.2, 1.2));
+}, { passive: false });
 document.addEventListener('pointerlockchange', () => {
   if (!document.pointerLockElement && S.mode === 'play') pauseGame();
 });
@@ -877,12 +896,12 @@ function hitBoss() {
   for (const e of S.enemies) if (e.alive && e.kind === 'minion') killEnemy(e);
   if (b.hp <= 0) {
     b.dying = 0.001;
-    toast('The Gloom is breaking apart...', 2600);
+    toast('The Gloom is melting away...', 2600);
     for (const pr of S.projectiles) pr.t = 99;
   } else {
     const ph = b.hp <= b.maxHp / 3 ? 3 : b.hp <= (2 * b.maxHp) / 3 ? 2 : 1;
-    if (ph !== b.phase) { b.phase = ph; toast(ph === 2 ? 'The Cold Heart howls: shots fly in every direction!' : 'The Cold Heart is furious!', 2400); }
-    else toast(`The Cold Heart cracks (${b.hp} more)`, 1500);
+    if (ph !== b.phase) { b.phase = ph; toast(ph === 2 ? 'The Cold Heart howls: shots fly in every direction!' : 'The Cold Heart is frightened, and warming!', 2400); }
+    else toast(`The Cold Heart warms (${b.hp} more)`, 1500);
   }
 }
 
@@ -1101,6 +1120,7 @@ function updateEnemies(dt) {
   S.enemies = S.enemies.filter((e) => e.alive);
 }
 
+const WARM_CORE = new THREE.Color(0xff9a3c), WARM_HALO = new THREE.Color(0xffc060), WARM_RING = new THREE.Color(0xffd27a);
 function updateBoss(dt) {
   const b = S.boss;
   if (!b) return;
@@ -1109,7 +1129,7 @@ function updateBoss(dt) {
   const distP = Math.hypot(P.pos.x - pl.x, P.pos.z - pl.z);
   if (!b.awake && distP < 18 && P.pos.y > pl.y - 3) {
     b.awake = true;
-    toast('The Cold Heart stirs. Burn it with your Flare!', 3000);
+    toast('The Cold Heart stirs. Warm it with your Flare!', 3000);
   }
   if (b.dying) {
     b.dying += dt;
@@ -1140,6 +1160,10 @@ function updateBoss(dt) {
   m.position.set(pl.x + (b.shake ? (Math.random() - 0.5) * 0.4 : 0), pl.y + 4.2 + Math.sin(S.clock * 1.3) * 0.4, pl.z);
   u.core.rotation.y += dt * 0.4;
   u.rings.forEach((r, i) => { r.rotation.x += dt * (0.4 + i * 0.3); r.rotation.y += dt * (0.3 - i * 0.2); });
+  b.warm = lerp(b.warm || 0, 1 - b.hp / b.maxHp, Math.min(1, 3 * dt));
+  u.mat.emissive.setHex(0x5a1280).lerp(WARM_CORE, b.warm);
+  u.halo.material.color.setHex(0x9a30ff).lerp(WARM_HALO, b.warm);
+  u.rings.forEach((r, i) => r.material.color.setHex(i === 1 ? 0xff7ad9 : 0xa86bff).lerp(WARM_RING, b.warm));
   u.mat.emissiveIntensity = b.inv > 0 ? 2.5 : 0.8 + Math.sin(S.clock * 3) * 0.2;
   if (!b.awake) return;
 
@@ -1401,7 +1425,7 @@ function pollPad(dt) {
   const dz = (v) => (Math.abs(v) < 0.2 ? 0 : v);
   PAD.mx = dz(gp.axes[0] || 0); PAD.my = dz(gp.axes[1] || 0);
   const rx = dz(gp.axes[2] || 0), ry = dz(gp.axes[3] || 0);
-  if (S.mode === 'play') { cam.yaw -= rx * 2.8 * dt; cam.pitch = clamp(cam.pitch + ry * 2 * dt, -0.15, 1.3); }
+  if (S.mode === 'play') lookBy(rx * 2.8 * dt, ry * 2 * dt);
   const down = (i) => !!(gp.buttons[i] && gp.buttons[i].pressed);
   if (S.mode === 'play') zoomBy(((gp.buttons[7] ? gp.buttons[7].value : 0) - (gp.buttons[6] ? gp.buttons[6].value : 0)) * 6 * dt);
   const edge = (i) => { const now = down(i), was = padPrev[i]; padPrev[i] = now; return now && !was; };
@@ -1453,8 +1477,7 @@ if (isTouch) {
     if (e.touches.length === 2 && pinch && S.mode === 'play') { const d = pinchDist(e); zoomBy((pinch - d) * 0.03); pinch = d; return; }
     if (!look || S.mode !== 'play') return;
     for (const t of e.changedTouches) if (t.identifier === look.id) {
-      cam.yaw -= (t.clientX - look.x) * 0.006;
-      cam.pitch = clamp(cam.pitch + (t.clientY - look.y) * 0.005, -0.15, 1.3);
+      lookBy((t.clientX - look.x) * 0.006, (t.clientY - look.y) * 0.005);
       look.x = t.clientX; look.y = t.clientY;
     }
   }, { passive: true });
@@ -1594,6 +1617,36 @@ $('btnHelp').onclick = () => openHelp('title');
 $('btnPauseHelp').onclick = () => openHelp('pause');
 $('btnHelpBack').onclick = () => { $('help').classList.remove('show'); $(helpFrom).classList.add('show'); };
 $('btnPauseMenu').onclick = () => toMenu(false);
+
+let settingsFrom = 'title';
+function openSettings(from) {
+  settingsFrom = from;
+  $(from).classList.remove('show');
+  $('settings').classList.add('show');
+}
+$('btnSettings').onclick = () => openSettings('title');
+$('btnPauseSettings').onclick = () => openSettings('pause');
+$('btnSettingsBack').onclick = () => { $('settings').classList.remove('show'); $(settingsFrom).classList.add('show'); };
+const syncSettings = () => {
+  $('setSens').value = CFG.sens; $('setVol').value = CFG.volume; $('setInvert').checked = CFG.invertY; $('setQuality').value = CFG.quality;
+  $('setSensVal').textContent = CFG.sens.toFixed(1) + 'x'; $('setVolVal').textContent = Math.round(CFG.volume * 100) + '%';
+};
+$('setSens').oninput = (e) => { CFG.sens = parseFloat(e.target.value); saveCfg(); syncSettings(); };
+$('setVol').oninput = (e) => { CFG.volume = parseFloat(e.target.value); setVolume(CFG.volume); saveCfg(); syncSettings(); };
+$('setInvert').onchange = (e) => { CFG.invertY = e.target.checked; saveCfg(); };
+$('setQuality').onchange = (e) => { CFG.quality = e.target.value; saveCfg(); applyQuality(); };
+setVolume(CFG.volume);
+syncSettings();
+
+const canFullscreen = !!document.documentElement.requestFullscreen;
+function toggleFullscreen() {
+  if (document.fullscreenElement) document.exitFullscreen();
+  else document.documentElement.requestFullscreen().catch(() => {});
+}
+if (!canFullscreen) { $('btnFull').style.display = 'none'; $('tFull').style.display = 'none'; }
+$('btnFull').onclick = toggleFullscreen;
+$('tFull').addEventListener('click', toggleFullscreen);
+document.addEventListener('fullscreenchange', () => { $('btnFull').textContent = document.fullscreenElement ? 'Exit fullscreen' : 'Fullscreen'; });
 $('tPause')?.addEventListener('click', pauseGame);
 
 function startLevel(idx) {
@@ -1667,16 +1720,19 @@ function completeLevel() {
   if (S.isHearth) {
     unlock(LEVELS.length - 1);
     const diary = getDiary().length;
-    const body = ENDING.body.slice();
-    if (diary >= LEVELS.length) body.push(DIARY_BONUS);
-    showCard({ ...ENDING, body, button: 'The End', extra: `${stats}<br>Diary pages found: ${diary}/${LEVELS.length}`, onDone: () => { localStorage.removeItem('lastEmber.level'); showTitle(); } });
+    const finish = (kind) => {
+      const tier = [...DIARY_TIERS].reverse().find((t) => diary >= t.min);
+      const body = [...ENDINGS[kind].body, tier.text];
+      showCard({ ...ENDINGS[kind], body, button: 'The End', extra: `${stats}<br>Diary pages found: ${diary}/${LEVELS.length}`, onDone: () => { localStorage.removeItem('lastEmber.level'); showTitle(); } });
+    };
+    showCard({ ...CHOICE, button: CHOICE.together, onDone: () => finish('together'), button2: CHOICE.become, onDone2: () => finish('become') });
     return;
   }
   const next = S.level + 1;
   localStorage.setItem('lastEmber.level', String(next));
   unlock(next);
   showCard({
-    top: `${L.realm} complete`, title: L.name, body: L.outro, button: 'Onward', extra: stats,
+    top: `${L.realm} complete`, title: L.name, body: S.secretFound || getDiary().includes(S.level) ? [...L.outro, `<small style="color:#ffd27a">Echo.</small> ${L.echo}`] : L.outro, button: 'Onward', extra: stats,
     onDone: () => startLevel(next),
   });
 }
@@ -1714,9 +1770,15 @@ $('btnContinue').onclick = () => {
 
 // ---------- main loop ----------
 let last = performance.now();
+let slowTime = 0;
 function frame(now) {
   requestAnimationFrame(frame);
-  const dt = Math.min((now - last) / 1000, 0.05);
+  const raw = (now - last) / 1000;
+  if (CFG.quality === 'auto' && S.mode === 'play' && !document.hidden) {
+    slowTime = Math.max(0, slowTime + (raw > 0.034 ? raw : -raw * 2));
+    if (slowTime > 2 && autoRatio > 0.75) { autoRatio = Math.max(0.75, autoRatio - 0.25); slowTime = 0; applyQuality(); }
+  }
+  const dt = Math.min(raw, 0.05);
   last = now;
   pollPad(dt);
   const showTouch = isTouch && S.mode === 'play';
